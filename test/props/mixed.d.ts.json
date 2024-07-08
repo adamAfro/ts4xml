@@ -1,0 +1,40 @@
+[
+  {
+    "name": "PropEl",
+    "properties": []
+  },
+  {
+    "name": "PropsEl",
+    "properties": []
+  },
+  {
+    "name": "PropsOptEl",
+    "properties": []
+  },
+  {
+    "name": "ArrayEl",
+    "properties": []
+  },
+  {
+    "name": "ArrayPropElTuple",
+    "properties": [
+      {
+        "name": "various",
+        "mandatory": true,
+        "types": [
+          "string",
+          {
+            "reference": "PropEl"
+          },
+          {
+            "reference": "PropsEl"
+          },
+          {
+            "reference": "PropsOptEl"
+          }
+        ],
+        "multiple": true
+      }
+    ]
+  }
+]

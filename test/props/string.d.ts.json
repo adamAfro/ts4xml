@@ -1,0 +1,14 @@
+[
+  {
+    "name": "PropEl",
+    "properties": [
+      {
+        "name": "char",
+        "mandatory": true,
+        "types": [
+          "string"
+        ]
+      }
+    ]
+  }
+]

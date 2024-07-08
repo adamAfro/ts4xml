@@ -1,0 +1,29 @@
+[
+  {
+    "name": "PropEl",
+    "properties": [
+      {
+        "name": "values",
+        "mandatory": true,
+        "types": [
+          {
+            "value": [
+              "a"
+            ]
+          },
+          {
+            "value": [
+              "b"
+            ]
+          },
+          {
+            "value": [
+              "c"
+            ]
+          }
+        ],
+        "multiple": false
+      }
+    ]
+  }
+]

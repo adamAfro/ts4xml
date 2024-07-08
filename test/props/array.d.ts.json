@@ -1,0 +1,15 @@
+[
+  {
+    "name": "ArrayEl",
+    "properties": [
+      {
+        "name": "chars",
+        "mandatory": true,
+        "types": [
+          "string"
+        ],
+        "multiple": true
+      }
+    ]
+  }
+]
