@@ -6,12 +6,15 @@ Deno utility for converting typescript interfaces to XSD schema:
 - [x] names of interfaces are saved;
 - [ ] does not treat all nested interfaces as 1st level;
 - [ ] support nested properties;
+- [ ] support `type` keyword for global types;
 - [x] properties can:
     - [x] have mixed types;
     - [x] be optional;
     - [x] be arrays;
     - [x] be references to other interfaces.
-- [ ] tranform JSON object to XSD schema.
+- [ ] tranform JSON object to XSD schema;
+    - [x] allow implementing attributes inside tags;
+    - [ ] allow implementing contens inside tags.
 
 **Good practices**:
 
