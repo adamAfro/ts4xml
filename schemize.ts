@@ -1,4 +1,4 @@
-import { Element, Property, AnyType } from './types.d.ts'
+import { Element, Property, AnyType, SimpleType, RestrictedType, ReferenceType } from './types.d.ts'
 
 export default function schemize(elements: Element[], indent = '  ') {
 
