@@ -1,16 +1,6 @@
 import { createProgram, Node as TypescriptNode, SyntaxKind } from "https://esm.sh/typescript@4.9.5"
 
-interface Element { name: string, properties: Property[] }
-type SimpleType = 'any'|'boolean'|'number'|'string'|'null'|'undefined'
-type RestrictedType = { value: number|string }
-type ReferenceType = { reference: string }
-type AnyType = SimpleType|RestrictedType|ReferenceType
-interface Property { 
-    name: string,
-    mandatory: boolean,
-    types: (SimpleType|RestrictedType|ReferenceType)[]
-    multiple?: boolean
-}
+import { Element, Property, SimpleType, RestrictedType, ReferenceType } from './types.d.ts'
 
 // TODO deistinguish to 2 types of nodes
 type Node = TypescriptNode & { 
