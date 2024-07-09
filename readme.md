@@ -25,4 +25,4 @@ Deno utility for converting typescript interfaces to XSD schema:
 
 **Testing**:
 
-    deno test --allow-env --allow-read test.deno.ts
+    deno test --allow-env --allow-read test/run.ts
