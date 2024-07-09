@@ -16,6 +16,9 @@ Deno utility for converting typescript interfaces to XSD schema:
     - [x] allow implementing attributes inside tags;
     - [ ] allow implementing contens inside tags.
 
+See [test](test/readme.md) for implemented features with
+generic use cases.
+
 **Good practices**:
 
 - use only simple types and object with simple types;
