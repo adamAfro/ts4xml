@@ -1,4 +1,5 @@
-import { createProgram, Node as TypescriptNode, SyntaxKind } from "https://esm.sh/typescript@4.9.5"
+import { Node as TypescriptNode, SyntaxKind } from "https://esm.sh/typescript@4.9.5"
+import { createSourceFile, ScriptTarget } from "https://esm.sh/typescript@4.9.5"
 
 import { Element, Property, SimpleType, RestrictedType, ReferenceType } from './types.d.ts'
 
@@ -197,10 +198,9 @@ function crawl(node: TypescriptNode, data = [] as Element[]) {
     return data
 }
 
-export default function extract(path:string) {
-
-    let program = createProgram({ rootNames: [path], options: {} })
-    let file = program.getSourceFile(path)!
+export default function etract(code: string) {
+    
+    const file = createSourceFile('code.ts', code, ScriptTarget.Latest, /*setParentNodes */ true);
 
     return crawl(file)
 }
