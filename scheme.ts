@@ -15,7 +15,9 @@ export default function scheme(elements: Element[], indent = '  ') {
 
         converted.push(new Tag('element', [complx], { name: element.name }))
         for (let property of attrs)
-            complx.value.push(AttributeTag.fromType(property.name, property.types))
+            complx.value.push(AttributeTag.fromType(property.types, {
+                name: property.name, mandatory: property.mandatory
+            }))
     }
 
     schema.value = converted
@@ -86,7 +88,9 @@ class AttributeTag extends Tag {
         super('xs:attribute', value, Object.assign({}, attrs, { name }))
     }
 
-    static fromType(name:string, types:AnyType[]): Tag {
+    static fromType(types:AnyType[], {
+        name, mandatory
+    }: { name:string, mandatory:boolean }): Tag {
 
         let references = types.filter(t => t.hasOwnProperty('references')) as ReferenceType[]
         if (references.length > 0)
@@ -110,8 +114,9 @@ class AttributeTag extends Tag {
         if (simple.length == 0)
             throw new Error('Attribute must have a type')
     
-        if (simple.length == 1)
-            return new AttributeTag(name, null, { type: xstype(simple[0]) })
+        if (simple.length == 1) return new AttributeTag(name, null, { 
+            type: xstype(simple[0]), ...(mandatory ? { use: 'required' } : {})
+        })
         
         throw new Error('Not implemented yet')     
     }
