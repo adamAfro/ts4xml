@@ -1,6 +1,6 @@
 import { Element, Property, AnyType, SimpleType, RestrictedType, ReferenceType } from './types.d.ts'
 
-export default function schemize(elements: Element[], indent = '  ') {
+export default function scheme(elements: Element[], indent = '  ') {
 
     let schema = new Tag('schema', null, { 'xmlns:xs': 'http://www.w3.org/2001/XMLSchema' })
     let converted = [] as Tag[]

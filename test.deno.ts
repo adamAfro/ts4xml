@@ -1,5 +1,5 @@
 import extract from "./etract.ts"
-import schemize from "./schemize.ts"
+import scheme from "./scheme.ts"
 
 import { assertEquals } from "https://deno.land/std@0.224.0/assert/mod.ts";
 
@@ -39,7 +39,7 @@ for (let test of Deno.readDirSync('test/interf')) {
     let path = `test/interf/${test.name}`
     Deno.test(test.name, () => {
     
-        let output = schemize(extract(path)).toString()
+        let output = scheme(extract(path)).toString()
             .replace(/\n+/g, '\n')
             .replace(/\s+/g, ' ').trim()
         
