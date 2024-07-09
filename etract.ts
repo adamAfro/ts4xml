@@ -8,7 +8,7 @@ type Node = TypescriptNode & {
     text: undefined|string
 }
 
-namespace Parsing {
+namespace Extracting {
     
     export function interf(node:TypescriptNode): Element {
 
@@ -186,7 +186,7 @@ function crawl(node: TypescriptNode, data = [] as Element[]) {
     try {
         
         if (node.kind === SyntaxKind.InterfaceDeclaration)
-            data.push(Parsing.interf(node))
+            data.push(Extracting.interf(node))
     
         node.forEachChild(c => void crawl(c, data))
 
@@ -197,7 +197,7 @@ function crawl(node: TypescriptNode, data = [] as Element[]) {
     return data
 }
 
-export default function parse(path:string) {
+export default function extract(path:string) {
 
     let program = createProgram({ rootNames: [path], options: {} })
     let file = program.getSourceFile(path)!
