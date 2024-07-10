@@ -199,6 +199,17 @@ class Tag {
             
             throw new Error('Should not happen')
         }
+
+        let simple = types.filter(t => typeof t === 'string') as SimpleType[]
+
+        let restrictions = types.filter(t => t.hasOwnProperty('value')) as RestrictedType[]
+        if (restrictions.length > 0)
+            throw new Error('Not implemented yet')   
+   
+        let references = types.filter(t => t.hasOwnProperty('reference')) as ReferenceType[]
+        if (simple.length == 0 && multiple) return new Tag('sequence', references.map(r => new Tag('element', null, { 
+            ref: r.reference, minOccurs: '0', maxOccurs: 'unbounded'
+        })))
     
         throw new Error('Not implemented yet')
     }

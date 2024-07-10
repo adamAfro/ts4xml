@@ -187,30 +187,6 @@ interface PropsOptEl { char: string, bool?: boolean }
 
 
 
-
-## Element with array of references
-
-```ts
-interface PropEl {}
-
-interface PropsEl {}
-
-interface PropsOptEl {}
-
-interface ArrayEl {}
-
-interface ArrayPropElTuple {
-    various: (string|PropEl|PropsEl|PropsOptEl)[];
-}
-```
-
-
-
-
-
-
-
-
 ## Empty element
 
 
@@ -266,6 +242,52 @@ interface Parent { children: Child }
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+
+</xs:schema>
+```
+
+
+
+
+
+
+## Element with multiple elements as children
+
+```ts
+interface I1 {}; interface I2 {}
+interface Refs {
+    children: (I1|I2)[];
+}
+```
+
+```xsd
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  
+    <xs:element name="I1">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:length value="0"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:element>
+  
+    <xs:element name="I2">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:length value="0"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:element>
+    
+    <xs:element name="Refs">
+
+      <xs:complexType >
+        <xs:sequence>
+          <xs:element ref="I1" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="I2" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:complexType>
+    </xs:element>
 
 </xs:schema>
 ```
