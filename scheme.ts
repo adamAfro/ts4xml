@@ -34,7 +34,7 @@ class Element implements Abstract {
         let simple = this.properties
             .filter(p => p.types.length === 1 && p.types[0] === 'string') as unknown
         
-        return simple as SimpleType[]
+        return simple as Property[]
     }
 
     getAttributes() {
@@ -73,7 +73,7 @@ function prefix(type: SimpleType): string {
         case 'string':      return 'xs:string'
         case 'null':        return 'xs:null'
         case 'undefined':   return 'xs:undefined'
-        default: throw new Error('Not a valid xs:type')
+        default: throw new Error(`${JSON.stringify(type)} is not a valid xs:type`)
     }
 }
 
@@ -104,7 +104,7 @@ class Tag {
             }))
 
         let children = element.getChildren()
-        complex.add(Tag.createChildren(children.types, {
+        if (children) complex.add(Tag.createChildren(children.types, {
             name: element.name, 
             multiple: children.multiple, 
             mandatory: children.mandatory
@@ -117,7 +117,7 @@ class Tag {
 
         return new Tag('element', null, { 
             name: element.name, 
-            type: prefix(element.getSimple()[0])
+            type: prefix(element.getSimple()[0].types[0] as SimpleType)
         })
     }
 
@@ -216,9 +216,9 @@ class Tag {
             throw new Error('Attribute must have a type: ' + name)
     
         if (simple.length == 1) return new Tag('attribute', null, { 
+type: prefix(simple[0]), ...(mandatory ? { use: 'required' } : {}),
             name: name,
-            type: prefix(simple[0]), ...(mandatory ? { use: 'required' } : {})
-        })
+                    })
         
         throw new Error('Not implemented yet')     
     }
