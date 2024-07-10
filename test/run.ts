@@ -48,6 +48,9 @@ for (let section of sections) {
         
     } catch (error) { console.warn(error) }
 
+    if (section.name.startsWith('TODO'))
+        continue
+
     Deno.test({
         name: section.name + ' (extraction)',
         ignore: section.extracted ? false : true, fn: () => {

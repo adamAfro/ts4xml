@@ -403,3 +403,57 @@ interface RefsTxt {
 
  </xs:schema>
 ```
+
+
+
+
+
+
+## TODO Use typescript-type keyword as array for grouping
+
+```ts
+interface G1 {}
+interface G2 {}
+type G = G1|G2[]
+
+interface I {
+  children: G
+}
+```
+
+```xsd
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="G1">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:length value="0"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+
+  <xs:element name="G2">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:length value="0"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+
+  <xs:complexType name="G">
+    <xs:sequence>
+      <xs:element ref="G1" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element ref="G2" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="I">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="attr" type="G"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>
+```
