@@ -10,6 +10,48 @@ type Node = TypescriptNode & {
 }
 
 namespace Extracting {
+
+    export function func(node:TypescriptNode): Element {
+
+        let id = Finding.any(node, SyntaxKind.Identifier)
+        if(!id) throw new Error('No interface identifier found')
+        let name = id.escapedText as string
+
+        let properties = [] as Property[]
+        
+        let membership = Finding.any(node, SyntaxKind.TypeLiteral)
+        if (!membership) 
+            return { name, properties }
+
+        let members = Finding.all(membership, SyntaxKind.PropertySignature)
+        try {
+
+            for (let mebmer of members)
+                properties.push(prop(mebmer))
+
+        } catch (error) { console.warn(error.message, 'in', name) }
+
+        return { name, properties }
+    }
+
+    export function cls(node:TypescriptNode): Element {
+
+        let id = Finding.any(node, SyntaxKind.Identifier)
+        if(!id) throw new Error('No interface identifier found')
+        let name = id.escapedText as string
+
+        let properties = [] as Property[]
+        let members = Finding.all(node, SyntaxKind.PropertyDeclaration)
+       
+        try {
+
+            for (let mebmer of members)
+                properties.push(prop(mebmer))
+
+        } catch (error) { console.warn(error.message, 'in', name) }
+
+        return { name, properties }
+    }
     
     export function interf(node:TypescriptNode): Element {
 
