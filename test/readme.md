@@ -15,6 +15,7 @@ Test scripts parses this file and tests those sections:
 ## String property
 
 ```ts
+/** @schema */
 class Element { char: string }
 ```
 
@@ -49,6 +50,7 @@ class Element { char: string }
 ## Optional string property
 
 ```ts
+/** @schema */
 class Element { char?: string }
 ```
 
@@ -97,6 +99,7 @@ class Element { char?: string }
 ## String literals
 
 ```ts
+/** @schema */
 class Choice { value: 'a' | 'b' | 'c' }
 ```
 
@@ -142,6 +145,7 @@ class Choice { value: 'a' | 'b' | 'c' }
 ## Element with array type
 
 ```ts
+/** @schema */
 class ArrayEl { chars: string[] }
 ```
 
@@ -153,8 +157,13 @@ class ArrayEl { chars: string[] }
 ## Multiple functions
 
 ```ts
+/** @schema */
 class PropEl { char: string }
+
+/** @schema */
 class PropsEl { char: string, num: number }
+
+/** @schema */
 class PropsOptEl { char: string, bool?: boolean }
 ```
 
@@ -224,6 +233,7 @@ class PropsOptEl { char: string, bool?: boolean }
 
 
 ```ts
+/** @schema */
 class I {}
 ```
 
@@ -245,6 +255,7 @@ class I {}
 ## Element with string as children
 
 ```ts
+/** @schema */
 class Parent { children: string }
 ```
 
@@ -259,7 +270,10 @@ class Parent { children: string }
 ## Element with other element as children
 
 ```ts
+/** @schema */
 class Child { children: string }
+
+/** @schema */
 class Parent { children: Child }
 ```
 
@@ -286,6 +300,7 @@ class Parent { children: Child }
 ## String property and children
 
 ```ts
+/** @schema */
 class Element { char: string; children: string }
 ```
 
@@ -326,8 +341,11 @@ class Element { char: string; children: string }
 ## Element with multiple elements as children
 
 ```ts
+/** @schema */
 class I1 {}
+/** @schema */
 class I2 {}
+/** @schema */
 class Refs {
     children: (ReturnType<typeof I1>|ReturnType<typeof I2>)[];
 }
@@ -373,8 +391,11 @@ class Refs {
 ## Element with multiple elements and text
 
 ```ts
+/** @schema */
 class I1 {}
+/** @schema */
 class I2 {}
+/** @schema */
 class RefsTxt { children: (string|ReturnType<typeof I1>|ReturnType<typeof I2>)[] }
 ```
 
@@ -419,8 +440,13 @@ class RefsTxt { children: (string|ReturnType<typeof I1>|ReturnType<typeof I2>)[]
 ## Element with multiple elements and text while other simple types are ignored
 
 ```ts
+/** @schema */
 class I1 {}
+
+/** @schema */
 class I2 {}
+
+/** @schema */
 class RefsTxt { 
   children: (string|number|boolean|ReturnType<typeof I1>|ReturnType<typeof I2>)[]
 }
@@ -467,10 +493,16 @@ class RefsTxt {
 ## TODO Use typescript-type keyword as array for grouping
 
 ```ts
+/** @schema */
 class G1 {}
+
+/** @schema */
 class G2 {}
+
+/** @schema */
 type G = ReturnType<typeof G1>|ReturnType<typeof G2>[]
 
+/** @schema */
 class I {
   children: G
 }

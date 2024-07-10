@@ -1,4 +1,4 @@
-import { Node as TypescriptNode, SyntaxKind } from "https://esm.sh/typescript@4.9.5"
+import { Node as TypescriptNode, SyntaxKind, JSDoc } from "https://esm.sh/typescript@4.9.5"
 import { createSourceFile, ScriptTarget } from "https://esm.sh/typescript@4.9.5"
 
 import { Element, Property, SimpleType, RestrictedType, ReferenceType } from './types.d.ts'
@@ -237,16 +237,20 @@ namespace Finding {
     }
 }
 
-function crawl(node: TypescriptNode, data = [] as Element[], level = 0) {
-
+function crawl(node: TypescriptNode & { jsDoc?: JSDoc[] }, data = [] as Element[], level = 0) {
+    
     try {
         
-        let indent = '  '.repeat(level)
-        if (node.kind === SyntaxKind.ClassDeclaration)
-            data.push(Extracting.cls(node))
-    
-        node.forEachChild(c => void crawl(c, data, level+1))
+        if (node.kind === SyntaxKind.ClassDeclaration) {
+            
+            const jsDocs = node.jsDoc as JSDoc[]
+            const hasXSDTag = jsDocs?.some(doc => doc.tags?.some(tag => tag.tagName.text === 'schema'))
+            if (hasXSDTag) {
+                data.push(Extracting.cls(node))
+            }
+        }
 
+        node.forEachChild(c => void crawl(c, data, level + 1))
     } catch (error) {
         console.warn(error.message)
     }
