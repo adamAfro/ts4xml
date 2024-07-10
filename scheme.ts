@@ -196,6 +196,17 @@ class Tag {
             indentation+`</xs:${this.name}>`
     }
 
+    stringifyValue(level = 0, indent = '  '): string {
+
+        let indentation = indent.repeat(level)
+
+        if (this.value === null)
+            return ''
+            
+        return indentation + this.getOrderedValue()
+            .map(t => t.toString(level + 1, indent)).join('')
+    }
+
     getOrderedValue(): Tag[] {
 
         const Order = ['sequence', 'attribute']
@@ -206,17 +217,6 @@ class Tag {
             return aIndex - bIndex
 
         }) || []
-    }
-
-    stringifyValue(level = 0, indent = '  '): string {
-
-        let indentation = '\n' + indent.repeat(level)
-
-        if (this.value === null)
-            return ''
-            
-        return indentation + this.getOrderedValue()
-            .map(t => t.toString(level + 1, indent)).join('')
     }
 
     static createChildren(content: Content, types:AnyType[], { 
