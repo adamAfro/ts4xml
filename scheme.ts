@@ -10,7 +10,7 @@ export default function scheme(elements: Element[], indent = '  ') {
         if (props.length === 1 && props[0].name === 'children' && typeof props[0].types[0] === 'string') {
 
             converted.push(new Tag('element', null, { 
-                name: element.name, type: xstype(props[0].types[0])
+                name: element.name, type: prefix(props[0].types[0])
             }))
 
             continue
@@ -18,10 +18,10 @@ export default function scheme(elements: Element[], indent = '  ') {
 
         let complx = new Tag('complexType')
             complx.value = [] as Tag[]
-converted.push(Tag.stack([['element', { name: element.name }]], [complx]))
+        converted.push(Tag.stack([['element', { name: element.name }]], [complx]))
 
-let attrs = props.filter(p => p.name !== 'children')
-                for (let property of attrs)
+        let attrs = props.filter(p => p.name !== 'children')
+        for (let property of attrs)
             complx.value.push(AttributeTag.fromType(property.types, {
                 name: property.name, mandatory: property.mandatory
             }))
@@ -41,17 +41,17 @@ let attrs = props.filter(p => p.name !== 'children')
     return schema
 }
 
-function xstype(type:SimpleType): string {
+function prefix(type: SimpleType): string {
 
     switch (type) {
-        case 'any': return 'xs:anyType'
-        case 'boolean': return 'xs:boolean'
-        case 'number': return 'xs:decimal'
-        case 'string': return 'xs:string'
-        case 'null': return 'xs:null'
-        case 'undefined': return 'xs:undefined'
+        case 'any':         return 'xs:anyType'
+        case 'boolean':     return 'xs:boolean'
+        case 'number':      return 'xs:decimal'
+        case 'string':      return 'xs:string'
+        case 'null':        return 'xs:null'
+        case 'undefined':   return 'xs:undefined'
+        default: throw new Error('Not a valid xs:type')
     }
-
 }
 
 class Tag {
@@ -154,14 +154,14 @@ class AttributeTag extends Tag {
                 value: a.value as string 
             }))
             
-            return new Tag('restriction', allowed, { base: xstype('string') })
+            return new Tag('restriction', allowed, { base: prefix('string') })
         }
             
         if (simple.length == 0)
             throw new Error('Attribute must have a type')
     
         if (simple.length == 1) return new AttributeTag(name, null, { 
-            type: xstype(simple[0]), ...(mandatory ? { use: 'required' } : {})
+            type: prefix(simple[0]), ...(mandatory ? { use: 'required' } : {})
         })
         
         throw new Error('Not implemented yet')     
