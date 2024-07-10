@@ -1,45 +1,68 @@
-import { Element, Property, AnyType, SimpleType, RestrictedType, ReferenceType } from './types.d.ts'
+import { Element as Abstract, Property, AnyType, SimpleType, RestrictedType, ReferenceType } from './types.d.ts'
 
-export default function scheme(elements: Element[], indent = '  ') {
+const XSAttrs = { 'xmlns:xs': 'http://www.w3.org/2001/XMLSchema' }
+export default function scheme(elements: Abstract[]) {
 
-    let schema = new Tag('schema', null, { 'xmlns:xs': 'http://www.w3.org/2001/XMLSchema' })
-    let converted = [] as Tag[]
-    for (let element of elements) {
-
-        let props = element.properties as Property[]
-        if (props.length === 1 && props[0].name === 'children' && typeof props[0].types[0] === 'string') {
-
-            converted.push(new Tag('element', null, { 
-                name: element.name, type: prefix(props[0].types[0])
-            }))
-
-            continue
-        }
-
-        let complx = new Tag('complexType')
-            complx.value = [] as Tag[]
-        converted.push(Tag.stack([['element', { name: element.name }]], [complx]))
-
-        let attrs = props.filter(p => p.name !== 'children')
-        for (let property of attrs)
-            complx.value.push(AttributeTag.fromType(property.types, {
-                name: property.name, mandatory: property.mandatory
-            }))
-
-        let children = props.filter(p => p.name === 'children')
-        for (let child of children)
-            complx.value.push(Tag.createChildren(child.types, {
-                name: element.name, 
-                multiple: child.multiple, 
-                mandatory: child.mandatory
-            }))
-
-    }
-
-    schema.value = converted
+    let schema = new Tag('schema', [], XSAttrs)
+    for (let element of elements.map(e => new Element(e.name, e.properties)))
+        schema.add(Tag.fromElement(element))
 
     return schema
 }
+
+class Element implements Abstract {
+
+    name: string
+    properties: Property[]
+
+    constructor(name: string, properties: Property[]) {
+        this.name = name, this.properties = properties
+    }
+
+    get type() {
+
+        if (this.properties.length === 1 && this.properties[0].name === 'children') {
+            if (this.properties[0].types[0] === 'string')
+                return Types.SimpleContent
+        }
+
+        return Types.Unknown
+    }
+
+    getSimple() {
+
+        let simple = this.properties
+            .filter(p => p.types.length === 1 && p.types[0] === 'string') as unknown
+        
+        return simple as SimpleType[]
+    }
+
+    getAttributes() {
+
+        let attributes = this.properties
+            .filter(p => p.name !== 'children') as unknown
+        
+        return attributes as Property[]
+    }
+
+    getChildren() {
+
+        let children = this.properties
+            .find(p => p.name === 'children') as unknown
+        
+        return children as Property
+    }
+}
+
+enum Types {
+
+    SimpleContent,
+    ElementContent,
+    MixedContent,
+    RestrictedContent,
+    Unknown
+}
+
 
 function prefix(type: SimpleType): string {
 
@@ -67,6 +90,37 @@ class Tag {
         this.attrs = attrs
     }
 
+    static fromElement(element:Element) {
+
+        if (element.type === Types.SimpleContent)
+            return Tag.simple(element)
+
+        let complex = new Tag('complexType')
+
+        let attrs = element.getAttributes()
+        for (let property of attrs)
+            complex.add(Tag.createAttribute(property.types, {
+                name: property.name, mandatory: property.mandatory
+            }))
+
+        let children = element.getChildren()
+        complex.add(Tag.createChildren(children.types, {
+            name: element.name, 
+            multiple: children.multiple, 
+            mandatory: children.mandatory
+        }))
+        
+        return Tag.stack([['element', { name: element.name }]], [complex])
+    }
+
+    static simple(element: Element) {
+
+        return new Tag('element', null, { 
+            name: element.name, 
+            type: prefix(element.getSimple()[0])
+        })
+    }
+
     static stack(flow: [string, Record <string, string>][] = [], value: null|(string|Tag)[] = null): Tag {
 
         flow = flow.reverse()
@@ -75,6 +129,14 @@ class Tag {
             value = [new Tag(name, value, attrs)]
 
         return tag
+    }
+
+    add(...added:(string|Tag)[]) {
+        
+        if (this.value === null) 
+            this.value = []
+        
+        this.value.push(...added)
     }
 
     toString(level = 0, indent = '  ') {
@@ -126,15 +188,8 @@ class Tag {
     
         throw new Error('Not implemented yet')
     }
-}
 
-class AttributeTag extends Tag {
-    
-    constructor(name: string, value: null|(string|Tag)[], attrs:Record <string, string> = {}) {
-        super('attribute', value, Object.assign({}, attrs, { name }))
-    }
-
-    static fromType(types:AnyType[], {
+    static createAttribute(types:AnyType[], {
         name, mandatory
     }: { name:string, mandatory:boolean }): Tag {
 
@@ -158,9 +213,10 @@ class AttributeTag extends Tag {
         }
             
         if (simple.length == 0)
-            throw new Error('Attribute must have a type')
+            throw new Error('Attribute must have a type: ' + name)
     
-        if (simple.length == 1) return new AttributeTag(name, null, { 
+        if (simple.length == 1) return new Tag('attribute', null, { 
+            name: name,
             type: prefix(simple[0]), ...(mandatory ? { use: 'required' } : {})
         })
         
