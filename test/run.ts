@@ -1,5 +1,5 @@
 import Markdown from 'https://esm.sh/markdown-it@14.1.0'
-import extract from '../etract.ts'
+import extract from '../extract.ts'
 import scheme from '../scheme.ts'
 
 import { fail, assertEquals } from "https://deno.land/std@0.224.0/assert/mod.ts";

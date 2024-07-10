@@ -198,7 +198,7 @@ function crawl(node: TypescriptNode, data = [] as Element[]) {
     return data
 }
 
-export default function etract(code: string) {
+export default function extract(code: string) {
     
     const file = createSourceFile('code.ts', code, ScriptTarget.Latest, /*setParentNodes */ true);
 
