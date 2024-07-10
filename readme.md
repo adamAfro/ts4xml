@@ -14,10 +14,27 @@ Deno utility for converting typescript interfaces to XSD schema:
     - [x] be references to other interfaces.
 - [ ] tranform JSON object to XSD schema;
     - [x] allow implementing attributes inside tags;
-    - [ ] allow implementing contens inside tags.
+    - [ ] allow implementing contens inside tags;
+- [ ] allow not supported interfaces to be ignored, with a message;
+- [ ] allow setting up `children` name.
+
+**Supported features**:
+
+* simple type property;
+* optional simple type property;
+* text and number literals;
+* array properties;
+* multiple interfaces;
+* empty element;
+* element with text as children;
+* element with other element as children;
+* multiple elements;
+* multiple elements and text;
+* multiple elements and text (ignoring other simple types);
+
 
 See [test](test/readme.md) for implemented features with
-generic use cases.
+generic unit cases.
 
 **Good practices**:
 
