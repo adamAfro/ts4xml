@@ -248,7 +248,13 @@ class Tag {
                 value: a.value as string 
             }))
             
-            return new Tag('restriction', allowed, { base: prefix('string') })
+            return Tag.stack([
+                
+                ['attribute', { name }],
+                ['simpleType', {}],
+                ['restriction', { base: prefix('string') }]
+            
+            ], allowed)
         }
             
         if (simple.length == 0)

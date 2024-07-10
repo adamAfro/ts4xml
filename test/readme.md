@@ -82,14 +82,14 @@ interface Element { char?: string; }
 ## String literals
 
 ```ts
-interface PropEl { values: 'a' | 'b' | 'c' }
+interface Choice { value: 'a' | 'b' | 'c' }
 ```
 
 ```json
 [{
-  "name": "PropEl",
+  "name": "Choice",
   "properties": [{
-    "name": "values",
+    "name": "value",
     "mandatory": true,
     "multiple": false,
     "types": [
@@ -99,6 +99,24 @@ interface PropEl { values: 'a' | 'b' | 'c' }
     ]
   }]
 }]
+```
+
+```xsd
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="Choice">
+    <xs:complexType>
+      <xs:attribute name="value">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="a"/>
+            <xs:enumeration value="b"/>
+            <xs:enumeration value="c"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
 ```
 
 
