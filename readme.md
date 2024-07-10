@@ -28,6 +28,7 @@ Deno utility for converting typescript interfaces to XSD schema:
 * empty element;
 * element with text as children;
 * element with other element as children;
+* both string property and children;
 * multiple elements;
 * multiple elements and text;
 * multiple elements and text (ignoring other simple types);

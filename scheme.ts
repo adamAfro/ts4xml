@@ -30,7 +30,7 @@ class Element implements Abstract {
 
             let children = this.properties.find(p => p.name === 'children') as Property
 
-            if (this.properties.length === 1 && children.types.length === 1 && children.types[0] === 'string')
+            if (children.types.length === 1 && children.types[0] === 'string')
                 return Content.Simple
 
             if (children.types.length > 1) {
@@ -44,6 +44,13 @@ class Element implements Abstract {
     }
 
     getAttributionType(): undefined|Attribution {
+
+        let attrs = this.getAttributes()
+        if (attrs.length === 0)
+            return Attribution.None
+    
+        if (this.getAttributes().length > 0)
+            return Attribution.Complex
 
         return Attribution.Simple
     }
@@ -92,10 +99,10 @@ function prefix(type: SimpleType): string {
 class Tag {
     
     name: string
-    value: null|(string|Tag)[]
+    value: null|Tag[]
     attrs: Record <string, string>
 
-    constructor(name:string, value: null|(string|Tag)[] = null, attrs:Record <string, string> = {}) {
+    constructor(name:string, value: null|Tag[] = null, attrs:Record <string, string> = {}) {
     
         this.name = name
         this.value = value
@@ -105,6 +112,7 @@ class Tag {
     static fromElement(element:Element) {
 
         let content = element.getContentType()
+        let attribution = element.getAttributionType()
         if (content === Content.Empty)
             return Tag.stack([
                 ['element', { name: element.name }],
@@ -113,7 +121,7 @@ class Tag {
                 ['length', { value: '0' }]
             ])
 
-        if (content === Content.Simple)
+        if (content === Content.Simple && attribution === Attribution.None)
             return Tag.simple(element)
 
         let complex = new Tag('complexType', [], {
@@ -129,7 +137,9 @@ class Tag {
         let children = element.getChildren()
         if (children) {
 
-            complex.add(Tag.createChildren(content!, children.types, {
+            if (content === Content.Simple)
+                complex.set('mixed', 'true')
+            else complex.add(Tag.createChildren(content!, children.types, {
                 name: element.name, 
                 multiple: children.multiple, 
                 mandatory: children.mandatory
@@ -147,7 +157,7 @@ class Tag {
         })
     }
 
-    static stack(flow: [string, Record <string, string>][] = [], value: null|(string|Tag)[] = null): Tag {
+    static stack(flow: [string, Record <string, string>][] = [], value: null|Tag[] = null): Tag {
 
         flow = flow.reverse()
         let tag = new Tag(flow[0][0], value, flow[0][1])
@@ -159,12 +169,16 @@ class Tag {
         return tag
     }
 
-    add(...added:(string|Tag)[]) {
+    add(...added:Tag[]) {
         
         if (this.value === null) 
             this.value = []
         
         this.value.push(...added)
+    }
+
+    set(key:string, value:string) {
+        this.attrs[key] = value
     }
 
     toString(level = 0, indent = '  ') {
@@ -182,6 +196,18 @@ class Tag {
             indentation+`</xs:${this.name}>`
     }
 
+    getOrderedValue(): Tag[] {
+
+        const Order = ['sequence', 'attribute']
+        return this.value?.sort((a, b) => {
+
+            let aIndex = Order.indexOf((a as Tag).name)
+            let bIndex = Order.indexOf((b as Tag).name)
+            return aIndex - bIndex
+
+        }) || []
+    }
+
     stringifyValue(level = 0, indent = '  '): string {
 
         let indentation = '\n' + indent.repeat(level)
@@ -189,7 +215,8 @@ class Tag {
         if (this.value === null)
             return ''
             
-        return indentation+this.value.map(v => typeof v === 'string' ? v : v.toString(level+1, indent)).join('')
+        return indentation + this.getOrderedValue()
+            .map(t => t.toString(level + 1, indent)).join('')
     }
 
     static createChildren(content: Content, types:AnyType[], { 
@@ -211,7 +238,13 @@ class Tag {
             if (types[0].hasOwnProperty('value'))
                 throw new Error('Not implemented yet')
             
-            throw new Error('Should not happen')
+            return Tag.stack([
+                ['sequence', {}]
+            ], [new Tag('element', null, {
+                type: prefix(types[0] as SimpleType),
+                minOccurs: mandatory ? '1' : '0',
+                maxOccurs: multiple ? 'unbounded' : '1'
+            })])
         }
 
         let simple = types.filter(t => typeof t === 'string') as SimpleType[]

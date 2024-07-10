@@ -268,6 +268,45 @@ interface Parent { children: Child }
 
 
 
+## String property and children
+
+```ts
+interface Element { char: string; children: string }
+```
+
+```json
+[{
+    "name": "Element",
+    "properties": [{
+        "name": "char",
+        "mandatory": true,
+        "types": [
+            "string"
+        ]
+    }, {
+        "name": "children",
+        "mandatory": true,
+        "types": [
+            "string"
+        ]
+    }]
+}]
+```
+
+```xsd
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"> 
+    <xs:element name="Element"> 
+        <xs:complexType mixed="true">
+            <xs:attribute type="xs:string" use="required" name="char"/>
+        </xs:complexType> 
+    </xs:element> 
+</xs:schema>
+```
+
+
+
+
+
 
 ## Element with multiple elements as children
 
