@@ -12,9 +12,9 @@ export default function scheme(elements: Element[], indent = '  ') {
 
         let complx = new Tag('complexType')
             complx.value = [] as Tag[]
+converted.push(Tag.stack([['element', { name: element.name }]], [complx]))
 
-        converted.push(new Tag('element', [complx], { name: element.name }))
-        for (let property of attrs)
+                for (let property of attrs)
             complx.value.push(AttributeTag.fromType(property.types, {
                 name: property.name, mandatory: property.mandatory
             }))
@@ -54,6 +54,16 @@ class Tag {
         this.name = name
         this.value = value
         this.attrs = attrs
+    }
+
+    static stack(flow: [string, Record <string, string>][] = [], value: null|(string|Tag)[] = null): Tag {
+
+        flow = flow.reverse()
+        let tag = new Tag(flow[0][0], value, flow[0][1])
+        for (let [name, attrs] of flow)
+            value = [new Tag(name, value, attrs)]
+
+        return tag
     }
 
     toString(level = 0, indent = '  ') {
