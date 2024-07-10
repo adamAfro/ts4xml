@@ -125,8 +125,10 @@ class Tag {
 
         flow = flow.reverse()
         let tag = new Tag(flow[0][0], value, flow[0][1])
-        for (let [name, attrs] of flow)
-            value = [new Tag(name, value, attrs)]
+        for (let [name, attrs] of flow) {
+            tag = new Tag(name, value, attrs)
+            value = [tag]    
+        }
 
         return tag
     }
