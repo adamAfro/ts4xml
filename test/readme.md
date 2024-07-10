@@ -209,6 +209,30 @@ interface ArrayPropElTuple {
 
 
 
+
+
+## Empty element
+
+
+```ts
+interface I {}
+```
+
+```xsd
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="I">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:length value="0"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+</xs:schema>
+```
+
+
+
+
 ## Element with string as children
 
 ```ts

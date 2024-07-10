@@ -21,6 +21,9 @@ class Element implements Abstract {
 
     get type() {
 
+        if (this.properties.length == 0)
+            return Types.Empty
+
         if (this.properties.length === 1 && this.properties[0].name === 'children') {
             if (this.properties[0].types[0] === 'string')
                 return Types.SimpleContent
@@ -55,6 +58,7 @@ class Element implements Abstract {
 }
 
 enum Types {
+    Empty,
 
     SimpleContent,
     ElementContent,
@@ -91,6 +95,14 @@ class Tag {
     }
 
     static fromElement(element:Element) {
+
+        if (element.type === Types.Empty)
+            return Tag.stack([
+                ['element', { name: element.name }],
+                ['simpleType', {}],
+                ['restriction', { base: 'xs:string' }],
+                ['length', { value: '0' }]
+            ])
 
         if (element.type === Types.SimpleContent)
             return Tag.simple(element)
@@ -218,9 +230,9 @@ class Tag {
             throw new Error('Attribute must have a type: ' + name)
     
         if (simple.length == 1) return new Tag('attribute', null, { 
-type: prefix(simple[0]), ...(mandatory ? { use: 'required' } : {}),
+            type: prefix(simple[0]), ...(mandatory ? { use: 'required' } : {}),
             name: name,
-                    })
+        })
         
         throw new Error('Not implemented yet')     
     }
