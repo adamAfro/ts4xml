@@ -64,7 +64,7 @@ class Tag {
             .map(([k, v]) => `${k}="${v}"`).join(' ')
 
         if (this.value === null)
-            return indentation+`<${this.name}${attributes} />`
+            return indentation+`<xs:${this.name}${attributes} />`
         
         return indentation+`<xs:${this.name}${attributes}>`+
             `${this.stringifyValue(level+1,indent)}`+
@@ -85,7 +85,7 @@ class Tag {
 class AttributeTag extends Tag {
     
     constructor(name: string, value: null|(string|Tag)[], attrs:Record <string, string> = {}) {
-        super('xs:attribute', value, Object.assign({}, attrs, { name }))
+        super('attribute', value, Object.assign({}, attrs, { name }))
     }
 
     static fromType(types:AnyType[], {
