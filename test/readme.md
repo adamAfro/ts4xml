@@ -291,3 +291,97 @@ interface Refs {
 
 </xs:schema>
 ```
+
+
+
+
+
+
+## Element with multiple elements and text
+
+```ts
+interface I1 {}; interface I2 {}
+interface RefsTxt {
+    children: (string|I1|I2)[];
+}
+```
+
+```xsd
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  
+    <xs:element name="I1">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:length value="0"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:element>
+  
+    <xs:element name="I2">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:length value="0"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:element>
+    
+    <xs:element name="RefsTxt">
+      
+        <xs:complexType mixed="true">
+            <xs:sequence>
+                <xs:element ref="I1" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="I2" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    
+    </xs:element>
+
+ </xs:schema>
+```
+
+
+
+
+
+
+## Element with multiple elements and text while other simple types are ignored
+
+```ts
+interface I1 {}; interface I2 {}
+interface RefsTxt {
+    children: (string|number|boolean|I1|I2)[];
+}
+```
+
+```xsd
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  
+    <xs:element name="I1">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:length value="0"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:element>
+  
+    <xs:element name="I2">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:length value="0"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:element>
+    
+    <xs:element name="RefsTxt">
+      
+        <xs:complexType mixed="true">
+            <xs:sequence>
+                <xs:element ref="I1" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="I2" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    
+    </xs:element>
+
+ </xs:schema>
+```

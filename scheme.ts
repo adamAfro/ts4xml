@@ -116,7 +116,9 @@ class Tag {
         if (content === Content.Simple)
             return Tag.simple(element)
 
-        let complex = new Tag('complexType')
+        let complex = new Tag('complexType', [], {
+            ...(content === Content.ComplexMixed ? { mixed: 'true' } : {})
+        })
 
         let attrs = element.getAttributes()
         for (let property of attrs)
@@ -128,11 +130,11 @@ class Tag {
         if (children) {
 
             complex.add(Tag.createChildren(content!, children.types, {
-            name: element.name, 
-            multiple: children.multiple, 
-            mandatory: children.mandatory
-        }))
-}
+                name: element.name, 
+                multiple: children.multiple, 
+                mandatory: children.mandatory
+            }))
+        }
         
         return Tag.stack([['element', { name: element.name }]], [complex])
     }
@@ -216,13 +218,13 @@ class Tag {
 
         let restrictions = types.filter(t => t.hasOwnProperty('value')) as RestrictedType[]
         if (restrictions.length > 0)
-            throw new Error('Not implemented yet')   
+            throw new Error('Not implemented yet')
    
         let references = types.filter(t => t.hasOwnProperty('reference')) as ReferenceType[]
-        if (simple.length == 0 && multiple) return new Tag('sequence', references.map(r => new Tag('element', null, { 
+        if (multiple) return new Tag('sequence', references.map(r => new Tag('element', null, { 
             ref: r.reference, minOccurs: '0', maxOccurs: 'unbounded'
         })))
-    
+
         throw new Error('Not implemented yet')
     }
 
