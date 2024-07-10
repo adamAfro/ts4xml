@@ -203,3 +203,45 @@ interface ArrayPropElTuple {
     various: (string|PropEl|PropsEl|PropsOptEl)[];
 }
 ```
+
+
+
+
+
+
+## Element with string as children
+
+```ts
+interface Parent { children: string }
+```
+
+```xsd
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="Parent" type="xs:string"/>
+
+</xs:schema>
+```
+
+## Element with other element as children
+
+```ts
+interface Child { children: string }
+interface Parent { children: Child }
+```
+
+```xsd
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="Child" type="xs:string"/>
+
+  <xs:element name="Parent">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Child" minOccurs="1" maxOccurs="1"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>
+```

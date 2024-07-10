@@ -7,27 +7,38 @@ export default function scheme(elements: Element[], indent = '  ') {
     for (let element of elements) {
 
         let props = element.properties as Property[]
-        let children = props.filter(p => p.name === 'children')
-        let attrs = props.filter(p => p.name !== 'children')
+        if (props.length === 1 && props[0].name === 'children' && typeof props[0].types[0] === 'string') {
+
+            converted.push(new Tag('element', null, { 
+                name: element.name, type: xstype(props[0].types[0])
+            }))
+
+            continue
+        }
 
         let complx = new Tag('complexType')
             complx.value = [] as Tag[]
 converted.push(Tag.stack([['element', { name: element.name }]], [complx]))
 
+let attrs = props.filter(p => p.name !== 'children')
                 for (let property of attrs)
             complx.value.push(AttributeTag.fromType(property.types, {
                 name: property.name, mandatory: property.mandatory
             }))
+
+        let children = props.filter(p => p.name === 'children')
+        for (let child of children)
+            complx.value.push(Tag.createChildren(child.types, {
+                name: element.name, 
+                multiple: child.multiple, 
+                mandatory: child.mandatory
+            }))
+
     }
 
     schema.value = converted
 
     return schema
-}
-
-function children(types:AnyType[]) {
-
-    throw new Error('Not implemented yet')
 }
 
 function xstype(type:SimpleType): string {
@@ -89,6 +100,31 @@ class Tag {
             return ''
             
         return indentation+this.value.map(v => typeof v === 'string' ? v : v.toString(level+1, indent)).join('')
+    }
+
+    static createChildren(types:AnyType[], { name, 
+        multiple = false, mandatory = false
+    }: {
+        name: string, multiple?: boolean, mandatory?: boolean
+    }) {
+    
+        if (types.length === 1) {
+            
+            if (types[0].hasOwnProperty('reference')) return Tag.stack([
+                ['sequence', {}]
+            ], [new Tag('element', null, { 
+                ref: (types[0] as ReferenceType).reference,
+                minOccurs: mandatory ? '1' : '0',
+                maxOccurs: multiple ? 'unbounded' : '1'
+            })])
+
+            if (types[0].hasOwnProperty('value'))
+                throw new Error('Not implemented yet')
+            
+            throw new Error('Should not happen')
+        }
+    
+        throw new Error('Not implemented yet')
     }
 }
 
