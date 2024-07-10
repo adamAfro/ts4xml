@@ -10,6 +10,8 @@ export default function scheme(elements: Abstract[]) {
     return schema
 }
 
+enum Content { Empty, Simple, Complex, ComplexMixed }
+enum Attribution { None, Simple, Reference, Complex }
 class Element implements Abstract {
 
     name: string
@@ -19,17 +21,31 @@ class Element implements Abstract {
         this.name = name, this.properties = properties
     }
 
-    get type() {
+    getContentType(): undefined|Content {
 
         if (this.properties.length == 0)
-            return Types.Empty
+            return Content.Empty
 
-        if (this.properties.length === 1 && this.properties[0].name === 'children') {
-            if (this.properties[0].types[0] === 'string')
-                return Types.SimpleContent
+        if (this.properties.some(p => p.name === 'children')) {
+
+            let children = this.properties.find(p => p.name === 'children') as Property
+
+            if (this.properties.length === 1 && children.types.length === 1 && children.types[0] === 'string')
+                return Content.Simple
+
+            if (children.types.length > 1) {
+
+                if (children.types.some(t => typeof t === 'string'))
+                    return Content.ComplexMixed
+
+                return Content.Complex
+            }
         }
+    }
 
-        return Types.Unknown
+    getAttributionType(): undefined|Attribution {
+
+        return Attribution.Simple
     }
 
     getSimple() {
@@ -57,15 +73,7 @@ class Element implements Abstract {
     }
 }
 
-enum Types {
-    Empty,
 
-    SimpleContent,
-    ElementContent,
-    MixedContent,
-    RestrictedContent,
-    Unknown
-}
 
 
 function prefix(type: SimpleType): string {
@@ -96,7 +104,8 @@ class Tag {
 
     static fromElement(element:Element) {
 
-        if (element.type === Types.Empty)
+        let content = element.getContentType()
+        if (content === Content.Empty)
             return Tag.stack([
                 ['element', { name: element.name }],
                 ['simpleType', {}],
@@ -104,7 +113,7 @@ class Tag {
                 ['length', { value: '0' }]
             ])
 
-        if (element.type === Types.SimpleContent)
+        if (content === Content.Simple)
             return Tag.simple(element)
 
         let complex = new Tag('complexType')
@@ -116,11 +125,14 @@ class Tag {
             }))
 
         let children = element.getChildren()
-        if (children) complex.add(Tag.createChildren(children.types, {
+        if (children) {
+
+            complex.add(Tag.createChildren(content!, children.types, {
             name: element.name, 
             multiple: children.multiple, 
             mandatory: children.mandatory
         }))
+}
         
         return Tag.stack([['element', { name: element.name }]], [complex])
     }
@@ -178,8 +190,8 @@ class Tag {
         return indentation+this.value.map(v => typeof v === 'string' ? v : v.toString(level+1, indent)).join('')
     }
 
-    static createChildren(types:AnyType[], { name, 
-        multiple = false, mandatory = false
+    static createChildren(content: Content, types:AnyType[], { 
+        name, multiple = false, mandatory = false
     }: {
         name: string, multiple?: boolean, mandatory?: boolean
     }) {
