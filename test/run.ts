@@ -55,11 +55,13 @@ for (let section of sections) {
             let output = schema.toString()
                 .replace(/\s*\n\s*/g, '\n')
                 .replace(/ \/>/g, '/>')
+                .replace(/ >/g, '>')
                 .replace(/[\t\r ]+/g, ' ').trim()
             
             let expected = section.converted
                 .replace(/\s*\n\s*/g, '\n')
                 .replace(/ \/>/g, '/>')
+                .replace(/ >/g, '>')
                 .replace(/[\t\r ]+/g, ' ').trim()
             
     
