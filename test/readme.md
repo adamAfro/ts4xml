@@ -15,7 +15,7 @@ Test scripts parses this file and tests those sections:
 ## String property
 
 ```ts
-interface Element { char: string; }
+class Element { char: string }
 ```
 
 ```json
@@ -49,7 +49,22 @@ interface Element { char: string; }
 ## Optional string property
 
 ```ts
-interface Element { char?: string; }
+class Element { char?: string }
+```
+
+```json
+[{
+    "name": "Element",
+    "properties": [{
+        "name": "char",
+        "types": [
+            "string"
+        ]
+    }]
+}]
+```
+
+```xsd
 ```
 
 ```json
@@ -82,7 +97,7 @@ interface Element { char?: string; }
 ## String literals
 
 ```ts
-interface Choice { value: 'a' | 'b' | 'c' }
+class Choice { value: 'a' | 'b' | 'c' }
 ```
 
 ```json
@@ -127,7 +142,7 @@ interface Choice { value: 'a' | 'b' | 'c' }
 ## Element with array type
 
 ```ts
-interface ArrayEl { chars: string[] }
+class ArrayEl { chars: string[] }
 ```
 
 
@@ -135,12 +150,12 @@ interface ArrayEl { chars: string[] }
 
 
 
-## Multiple interfaces
+## Multiple functions
 
 ```ts
-interface PropEl { char: string }
-interface PropsEl { char: string, num: number }
-interface PropsOptEl { char: string, bool?: boolean }
+class PropEl { char: string }
+class PropsEl { char: string, num: number }
+class PropsOptEl { char: string, bool?: boolean }
 ```
 
 ```json
@@ -209,7 +224,7 @@ interface PropsOptEl { char: string, bool?: boolean }
 
 
 ```ts
-interface I {}
+class I {}
 ```
 
 ```xsd
@@ -230,7 +245,7 @@ interface I {}
 ## Element with string as children
 
 ```ts
-interface Parent { children: string }
+class Parent { children: string }
 ```
 
 ```xsd
@@ -244,8 +259,8 @@ interface Parent { children: string }
 ## Element with other element as children
 
 ```ts
-interface Child { children: string }
-interface Parent { children: Child }
+class Child { children: string }
+class Parent { children: Child }
 ```
 
 ```xsd
@@ -271,7 +286,7 @@ interface Parent { children: Child }
 ## String property and children
 
 ```ts
-interface Element { char: string; children: string }
+class Element { char: string; children: string }
 ```
 
 ```json
@@ -311,9 +326,10 @@ interface Element { char: string; children: string }
 ## Element with multiple elements as children
 
 ```ts
-interface I1 {}; interface I2 {}
-interface Refs {
-    children: (I1|I2)[];
+class I1 {}
+class I2 {}
+class Refs {
+    children: (ReturnType<typeof I1>|ReturnType<typeof I2>)[];
 }
 ```
 
@@ -357,10 +373,9 @@ interface Refs {
 ## Element with multiple elements and text
 
 ```ts
-interface I1 {}; interface I2 {}
-interface RefsTxt {
-    children: (string|I1|I2)[];
-}
+class I1 {}
+class I2 {}
+class RefsTxt { children: (string|ReturnType<typeof I1>|ReturnType<typeof I2>)[] }
 ```
 
 ```xsd
@@ -404,9 +419,10 @@ interface RefsTxt {
 ## Element with multiple elements and text while other simple types are ignored
 
 ```ts
-interface I1 {}; interface I2 {}
-interface RefsTxt {
-    children: (string|number|boolean|I1|I2)[];
+class I1 {}
+class I2 {}
+class RefsTxt { 
+  children: (string|number|boolean|ReturnType<typeof I1>|ReturnType<typeof I2>)[]
 }
 ```
 
@@ -451,11 +467,11 @@ interface RefsTxt {
 ## TODO Use typescript-type keyword as array for grouping
 
 ```ts
-interface G1 {}
-interface G2 {}
-type G = G1|G2[]
+class G1 {}
+class G2 {}
+type G = ReturnType<typeof G1>|ReturnType<typeof G2>[]
 
-interface I {
+class I {
   children: G
 }
 ```

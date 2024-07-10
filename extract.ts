@@ -10,7 +10,7 @@ type Node = TypescriptNode & {
 }
 
 namespace Extracting {
-
+    
     export function func(node:TypescriptNode): Element {
 
         let id = Finding.any(node, SyntaxKind.Identifier)
@@ -59,7 +59,7 @@ namespace Extracting {
         if(!id) throw new Error('No interface identifier found')
         let name = id.escapedText as string
 
-        let properties = []
+        let properties = [] as Property[]
         let members = Finding.all(node, SyntaxKind.PropertySignature)
        
         try {
@@ -113,11 +113,23 @@ namespace Extracting {
             return { types: [{ value: [...value]}],  }
         }
 
+        if (node.kind === SyntaxKind.TypeQuery) {
+
+            let ref = Finding.any(node, SyntaxKind.Identifier)
+            if(!ref) throw new Error('No reference identifier found')    
+            return { types: [{reference: ref.escapedText as string}] }
+        }
+
         if (node.kind === SyntaxKind.TypeReference) {
 
             let ref = Finding.any(node, SyntaxKind.Identifier)
             if(!ref) throw new Error('No reference identifier found')
-            return { types: [{reference: ref.escapedText as string}] }
+            if (ref.escapedText !== 'ReturnType')
+                return { types: [{reference: ref.escapedText as string}] }
+
+            let query = Finding.any(node, SyntaxKind.TypeQuery)
+            if(!query) throw new Error('No type query found')
+            return { types: typein(query).types }
         }
 
         if (NestingKind.some(test => test === node.kind)) {
@@ -168,6 +180,7 @@ namespace Extracting {
     ]
 
     const Kinds = [
+        SyntaxKind.TypeQuery,
         SyntaxKind.TypeReference,
         SyntaxKind.LiteralType,
         ...Mapping.keys(),
@@ -224,14 +237,15 @@ namespace Finding {
     }
 }
 
-function crawl(node: TypescriptNode, data = [] as Element[]) {
+function crawl(node: TypescriptNode, data = [] as Element[], level = 0) {
 
     try {
         
-        if (node.kind === SyntaxKind.InterfaceDeclaration)
-            data.push(Extracting.interf(node))
+        let indent = '  '.repeat(level)
+        if (node.kind === SyntaxKind.ClassDeclaration)
+            data.push(Extracting.cls(node))
     
-        node.forEachChild(c => void crawl(c, data))
+        node.forEachChild(c => void crawl(c, data, level+1))
 
     } catch (error) {
         console.warn(error.message)
