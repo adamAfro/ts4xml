@@ -2,7 +2,7 @@ import Markdown from 'https://esm.sh/markdown-it@14.1.0'
 import extract from '../etract.ts'
 import scheme from '../scheme.ts'
 
-import { assertEquals } from "https://deno.land/std@0.224.0/assert/mod.ts";
+import { fail, assertEquals } from "https://deno.land/std@0.224.0/assert/mod.ts";
 
 let script = new URL(import.meta.url).pathname
 let dir = script.substring(0, script.lastIndexOf('/'))
@@ -39,18 +39,30 @@ for (let i = 0; i < contents.length; i++) {
 
 for (let section of sections) {
 
-    let types = extract(section.input)
-    let schema = scheme(types)
+    let types: null|ReturnType <typeof extract> = null
+    let schema: null|ReturnType <typeof scheme> = null
+    try {
+
+        types = extract(section.input)
+        schema = scheme(types)
+        
+    } catch (error) { console.warn(error) }
 
     Deno.test({
         name: section.name + ' (extraction)',
-        ignore: section.extracted ? false : true, fn: () => 
+        ignore: section.extracted ? false : true, fn: () => {
+
+            if (!types) fail('No types extracted')
+
             assertEquals(types, JSON.parse(section.extracted))
+        }
     })
 
     Deno.test({
         name: section.name + ' (conversion)',
         ignore: section.converted ? false : true, fn: () => {
+
+            if (!schema) fail('No schema generated')
 
             let output = schema.toString()
                 .replace(/\s*\n\s*/g, '\n')
@@ -64,7 +76,6 @@ for (let section of sections) {
                 .replace(/ >/g, '>')
                 .replace(/[\t\r ]+/g, ' ').trim()
             
-    
             assertEquals(output, expected)
         }
     })
