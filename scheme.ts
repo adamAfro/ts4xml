@@ -228,22 +228,24 @@ class Tag {
         if (types.length === 1) {
             
             if (types[0].hasOwnProperty('reference')) return Tag.stack([
-                ['sequence', {}]
+                ['choice', {
+                    minOccurs: mandatory ? '1' : '0',
+                    maxOccurs: multiple ? 'unbounded' : '1'
+                }]
             ], [new Tag('element', null, { 
-                ref: (types[0] as ReferenceType).reference,
-                minOccurs: mandatory ? '1' : '0',
-                maxOccurs: multiple ? 'unbounded' : '1'
+                ref: (types[0] as ReferenceType).reference
             })])
 
             if (types[0].hasOwnProperty('value'))
                 throw new Error('Not implemented yet')
             
             return Tag.stack([
-                ['sequence', {}]
+                ['choice', {
+                    minOccurs: mandatory ? '1' : '0',
+                    maxOccurs: multiple ? 'unbounded' : '1'
+                }]
             ], [new Tag('element', null, {
-                type: prefix(types[0] as SimpleType),
-                minOccurs: mandatory ? '1' : '0',
-                maxOccurs: multiple ? 'unbounded' : '1'
+                type: prefix(types[0] as SimpleType)
             })])
         }
 
@@ -254,9 +256,9 @@ class Tag {
             throw new Error('Not implemented yet')
    
         let references = types.filter(t => t.hasOwnProperty('reference')) as ReferenceType[]
-        if (multiple) return new Tag('sequence', references.map(r => new Tag('element', null, { 
-            ref: r.reference, minOccurs: '0', maxOccurs: 'unbounded'
-        })))
+        if (multiple) return new Tag('choice', references.map(r => new Tag('element', null, { 
+            ref: r.reference
+        })), { minOccurs: '0', maxOccurs: 'unbounded' })
 
         throw new Error('Not implemented yet')
     }
