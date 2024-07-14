@@ -7,8 +7,11 @@ export default function render(obj:string|HTMLEntity): string {
         if (HTMLAttr.includes(key as any))
             attrs += `${key}="${obj[key as keyof HTMLEntity]}" `
 
+    if (obj.data) for (let key of Object.keys(obj.data))
+        attrs += `data-${key}="${obj.data[key]}" `
+
     if (!obj.children)
-        return `<${obj.name}${attrs ? ' ' + attrs : ''}></${obj.name}>`
+        return `<${obj.tag}${attrs ? ' ' + attrs : ''}></${obj.tag}>`
 
     if (Array.isArray(obj.children)) for (let i = 0; i < obj.children.length; i++) {
 
@@ -28,25 +31,26 @@ export default function render(obj:string|HTMLEntity): string {
         obj.children.map(render).join('') :
         render(obj.children)
 
-    if (obj.name) return `<${obj.name}${attrs ? ' ' + attrs : ''}>${
+    if (obj.tag) return `<${obj.tag}${attrs ? ' ' + attrs : ''}>${
         children
-    }</${obj.name}>`
+    }</${obj.tag}>`
 
     return children
 }
 
-export type HTMLEntity = { [key in AnyAttr]?: string } & {
-    name?: string,
-    source?: any, 
+export type HTMLEntity = { [key in typeof HTMLAttr[number]]?: string } & {
+    tag?: string,
+    source?: any,
     children?: string | HTMLEntity[],
+    data?: { [key:string]: any },
     layout?: (siblings: HTMLEntity[], pos: number) => 
         undefined|[HTMLEntity, number]
 }
 
-type AnyAttr = typeof HTMLAttr[number] | string // TODO remove
 const HTMLAttr = [
     'id', 'class',  
     'style',
-    'src', 'href'
+    'src', 'href', 'target',
+    'name'
     // TODO allow all HTML attrs
 ] as const
