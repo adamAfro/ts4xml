@@ -8,7 +8,7 @@ export default function render(obj:string|HTMLEntity): string {
             attrs += `${key}="${obj[key as keyof HTMLEntity]}" `
 
     if (!obj.children)
-        return `<${obj.name}${attrs ? ' ' + attrs : ''}/>`
+        return `<${obj.name}${attrs ? ' ' + attrs : ''}></${obj.name}>`
 
     if (Array.isArray(obj.children)) for (let i = 0; i < obj.children.length; i++) {
 
