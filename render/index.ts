@@ -43,7 +43,7 @@ export type HTMLEntity = { [key in AnyAttr]?: string } & {
         undefined|[HTMLEntity, number]
 }
 
-type AnyAttr = typeof HTMLAttr[number] & string // TODO remove
+type AnyAttr = typeof HTMLAttr[number] | string // TODO remove
 const HTMLAttr = [
     'id', 'class',  
     'style',
