@@ -10,28 +10,23 @@ type Node = TypescriptNode & {
 }
 
 namespace Extracting {
-    
-    export function func(node:TypescriptNode): Element {
 
-        let id = Finding.any(node, SyntaxKind.Identifier)
-        if(!id) throw new Error('No interface identifier found')
-        let name = id.escapedText as string
+    export function constr(node:TypescriptNode): Element {
 
         let properties = [] as Property[]
-        
-        let membership = Finding.any(node, SyntaxKind.TypeLiteral)
-        if (!membership) 
-            return { name, properties }
-
-        let members = Finding.all(membership, SyntaxKind.PropertySignature)
+        let members = Finding.all(node, SyntaxKind.Parameter)
         try {
 
-            for (let mebmer of members)
-                properties.push(prop(mebmer))
+            for (let member of members) {
+                let isPublic = Finding.any(member, SyntaxKind.PublicKeyword)
+                if (!isPublic) continue
+                properties.push(prop(member))
+            }
+                
 
-        } catch (error) { console.warn(error.message, 'in', name) }
+        } catch (error) { console.warn(error.message, 'in', 'constructor') }
 
-        return { name, properties }
+        return { name: 'constructor', properties }
     }
 
     export function cls(node:TypescriptNode): Element {
@@ -49,6 +44,14 @@ namespace Extracting {
                 properties.push(prop(mebmer))
 
         } catch (error) { console.warn(error.message, 'in', name) }
+
+        let constructor = Finding.any(node, SyntaxKind.Constructor)
+        if(!constructor) return { name, properties }
+        
+        properties.push(...constr(constructor).properties)
+
+        console.log(name, properties)
+
 
         return { name, properties }
     }

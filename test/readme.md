@@ -46,6 +46,78 @@ class Element { char: string }
 
 
 
+## String property as public constructor parameter
+
+```ts
+/** @schema */
+class Element { 
+  constructor(public char: string) {}
+}
+```
+
+```json
+[{
+    "name": "Element",
+    "properties": [{
+        "name": "char",
+        "mandatory": true,
+        "types": [
+            "string"
+        ]
+    }]
+}]
+```
+
+```xsd
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"> 
+    <xs:element name="Element"> 
+        <xs:complexType > 
+            <xs:attribute type="xs:string" use="required" name="char"/> 
+        </xs:complexType> 
+    </xs:element> 
+</xs:schema>
+```
+
+
+
+
+
+## String property as public constructor parameter with non public string
+
+```ts
+/** @schema */
+class Element { 
+  constructor(ignore:number, public char: string) {}
+}
+```
+
+```json
+[{
+    "name": "Element",
+    "properties": [{
+        "name": "char",
+        "mandatory": true,
+        "types": [
+            "string"
+        ]
+    }]
+}]
+```
+
+```xsd
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"> 
+    <xs:element name="Element"> 
+        <xs:complexType > 
+            <xs:attribute type="xs:string" use="required" name="char"/> 
+        </xs:complexType> 
+    </xs:element> 
+</xs:schema>
+```
+
+
+
+
+
 
 ## Optional string property
 
