@@ -284,9 +284,9 @@ class Parent { children: Child }
 
   <xs:element name="Parent">
     <xs:complexType>
-      <xs:sequence>
-        <xs:element ref="Child" minOccurs="1" maxOccurs="1"/>
-      </xs:sequence>
+      <xs:choice minOccurs="1" maxOccurs="1">
+        <xs:element ref="Child"/>
+      </xs:choice>
     </xs:complexType>
   </xs:element>
 
@@ -373,10 +373,10 @@ class Refs {
     <xs:element name="Refs">
 
       <xs:complexType >
-        <xs:sequence>
-          <xs:element ref="I1" minOccurs="0" maxOccurs="unbounded"/>
-          <xs:element ref="I2" minOccurs="0" maxOccurs="unbounded"/>
-        </xs:sequence>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element ref="I1"/>
+          <xs:element ref="I2"/>
+        </xs:choice>
       </xs:complexType>
     </xs:element>
 
@@ -421,10 +421,10 @@ class RefsTxt { children: (string|ReturnType<typeof I1>|ReturnType<typeof I2>)[]
     <xs:element name="RefsTxt">
       
         <xs:complexType mixed="true">
-            <xs:sequence>
-                <xs:element ref="I1" minOccurs="0" maxOccurs="unbounded"/>
-                <xs:element ref="I2" minOccurs="0" maxOccurs="unbounded"/>
-            </xs:sequence>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element ref="I1"/>
+                <xs:element ref="I2"/>
+            </xs:choice>
         </xs:complexType>
     
     </xs:element>
@@ -474,10 +474,10 @@ class RefsTxt {
     <xs:element name="RefsTxt">
       
         <xs:complexType mixed="true">
-            <xs:sequence>
-                <xs:element ref="I1" minOccurs="0" maxOccurs="unbounded"/>
-                <xs:element ref="I2" minOccurs="0" maxOccurs="unbounded"/>
-            </xs:sequence>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element ref="I1"/>
+                <xs:element ref="I2"/>
+            </xs:choice>
         </xs:complexType>
     
     </xs:element>
