@@ -16,7 +16,7 @@ export default function render(obj:string|HTMLEntity): string {
     if (Array.isArray(obj.children)) for (let i = 0; i < obj.children.length; i++) {
 
         let child = obj.children[i] as HTMLEntity
-        let change = child.layout ? child.layout(obj.children, i) : null
+        let change = child?.layout ? child.layout(obj.children, i) : null
         if(!change)
             continue
 
