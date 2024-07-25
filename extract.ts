@@ -18,8 +18,6 @@ namespace Extracting {
         try {
 
             for (let member of members) {
-                let isPublic = Finding.any(member, SyntaxKind.PublicKeyword)
-                if (!isPublic) continue
                 properties.push(prop(member))
             }
                 
