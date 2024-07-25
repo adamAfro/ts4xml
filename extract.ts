@@ -50,8 +50,6 @@ namespace Extracting {
         
         properties.push(...constr(constructor).properties)
 
-        console.log(name, properties)
-
 
         return { name, properties }
     }
